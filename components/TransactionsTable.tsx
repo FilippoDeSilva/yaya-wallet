@@ -1,43 +1,71 @@
-// // components/TransactionsTable.tsx
-// import type { Transaction } from "@/types/transactions";
+"use client";
+import React from "react";
 
-// function directionOf(t: Transaction, myAccount: string | null): "incoming" | "outgoing" | "topup" {
-//   if (t.sender === t.receiver) return "topup";
-//   if (!myAccount) return "outgoing";
-//   return t.receiver === myAccount ? "incoming" : "outgoing";
-// }
+type Tx = {
+	id: string;
+	sender: { name: string; account: string };
+	receiver: { name: string; account: string };
+	amount_with_currency: string;
+	amount: number;
+	currency: string;
+	cause: string;
+	created_at_time: number;
+	is_topup: boolean;
+	is_outgoing_transfer: boolean;
+};
 
-// export default function TransactionsTable({
-//   data,
-//   myAccount,
-// }: {
-//   data?: Transaction[];
-//   myAccount: string | null;
-// }) {
-//   if (!data) data = [];
+interface TransactionsTableProps {
+	txs: Tx[];
+	currentAccount: string;
+}
 
-//   return (
-//     <div className="overflow-x-auto rounded-xl border">
-//       <table className="min-w-full divide-y">
-//         <thead className="bg-gray-800 text-white">
-//           <tr>
-//             <th className="px-4 py-3 text-left text-xs font-semibold uppercase">Direction</th>
-//             <th className="px-4 py-3 text-left text-xs font-semibold uppercase">ID</th>
-//             <th className="px-4 py-3 text-left text-xs font-semibold uppercase">Sender</th>
-//             <th className="px-4 py-3 text-left text-xs font-semibold uppercase">Receiver</th>
-//             <th className="px-4 py-3 text-left text-xs font-semibold uppercase">Amount</th>
-//             <th className="px-4 py-3 text-left text-xs font-semibold uppercase">Currency</th>
-//             <th className="px-4 py-3 text-left text-xs font-semibold uppercase">Cause</th>
-//             <th className="px-4 py-3 text-left text-xs font-semibold uppercase">Created At</th>
-//           </tr>
-//         </thead>
-//         <tbody className="divide-y">
-//           {data.length > 0 ? (
-//             data.map((t) => {
-//               const dir = directionOf(t, myAccount);
-//               return (
-//                 <tr key={t.id} className="hover:bg-gray-50">
-//                   <td className="px-4 py-3">{dir}</td>
+export default function TransactionsTable({ txs, currentAccount }: TransactionsTableProps) {
+	return (
+		<div className="hidden md:block overflow-auto">
+			<table className="min-w-full table-fixed text-sm">
+				<thead className="bg-slate-100 dark:bg-slate-700">
+					<tr>
+						<th className="p-3 text-left w-40">Txn ID</th>
+						<th className="p-3 text-left w-32">Sender</th>
+						<th className="p-3 text-left w-32">Receiver</th>
+						<th className="p-3 text-right w-24">Amount</th>
+						<th className="p-3 text-left w-20">Currency</th>
+						<th className="p-3 text-left w-32">Cause</th>
+						<th className="p-3 text-left w-40">Created At</th>
+					</tr>
+				</thead>
+				<tbody>
+					{txs.map((t) => {
+						const id = t.id;
+						const senderName = t.sender?.name || t.sender?.account || "—";
+						const receiverName = t.receiver?.name || t.receiver?.account || "—";
+						const amount = t.amount_with_currency || t.amount;
+						const currency = t.currency || "—";
+						const cause = t.cause || "—";
+						const createdAt = t.created_at_time
+							? new Date(t.created_at_time * 1000).toLocaleString()
+							: "—";
+						const incoming = t.is_topup || receiverName === currentAccount;
+						return (
+							<tr
+								key={id}
+								className={`border-b dark:border-slate-700 transition hover:bg-sky-50/50 dark:hover:bg-sky-900/20 ${incoming ? "bg-green-50/50 dark:bg-green-900/20" : ""}`}
+							>
+								<td className="p-3 break-all max-w-xs text-xs text-slate-400 font-mono">{id}</td>
+								<td className="p-3 font-semibold">{senderName}</td>
+								<td className="p-3 font-semibold">{receiverName}</td>
+								<td className={`p-3 text-right font-bold ${incoming ? "text-green-600" : "text-red-600"}`}>{amount}</td>
+								<td className="p-3">{currency}</td>
+								<td className="p-3">{cause}</td>
+								<td className="p-3 text-xs">{createdAt}</td>
+							</tr>
+						);
+					})}
+				</tbody>
+			</table>
+		</div>
+	);
+}
 //                   <td className="px-4 py-3">{t.id}</td>
 //                   <td className="px-4 py-3">{t.sender}</td>
 //                   <td className="px-4 py-3">{t.receiver}</td>

@@ -3,6 +3,7 @@
 import { Delete, Search } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useTheme } from "@/components/ThemeProvider";
+import TransactionsTable from "@/components/TransactionsTable";
 
 // ----------------- Types -----------------
 type Tx = {
@@ -224,49 +225,7 @@ export default function Page() {
               </ul>
 
               {/* Desktop table */}
-              <div className="hidden md:block overflow-auto">
-                <table className="min-w-full table-fixed text-sm">
-                  <thead className="bg-slate-100 dark:bg-slate-700">
-                    <tr>
-                      <th className="p-3 text-left w-40">Txn ID</th>
-                      <th className="p-3 text-left w-32">Sender</th>
-                      <th className="p-3 text-left w-32">Receiver</th>
-                      <th className="p-3 text-right w-24">Amount</th>
-                      <th className="p-3 text-left w-20">Currency</th>
-                      <th className="p-3 text-left w-32">Cause</th>
-                      <th className="p-3 text-left w-40">Created At</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {txs.map((t) => {
-                      const id = t.id;
-                      const senderName = t.sender?.name || t.sender?.account || "—";
-                      const receiverName = t.receiver?.name || t.receiver?.account || "—";
-                      const amount = t.amount_with_currency || t.amount;
-                      const currency = t.currency || "—";
-                      const cause = t.cause || "—";
-                      const createdAt = t.created_at_time
-                        ? new Date(t.created_at_time * 1000).toLocaleString()
-                        : "—";
-                      const incoming = t.is_topup || receiverName === currentAccount;
-                      return (
-                        <tr
-                          key={id}
-                          className={`border-b dark:border-slate-700 transition hover:bg-sky-50/50 dark:hover:bg-sky-900/20 ${incoming ? "bg-green-50/50 dark:bg-green-900/20" : ""}`}
-                        >
-                          <td className="p-3 break-all max-w-xs text-xs text-slate-400 font-mono">{id}</td>
-                          <td className="p-3 font-semibold">{senderName}</td>
-                          <td className="p-3 font-semibold">{receiverName}</td>
-                          <td className={`p-3 text-right font-bold ${incoming ? "text-green-600" : "text-red-600"}`}>{amount}</td>
-                          <td className="p-3">{currency}</td>
-                          <td className="p-3">{cause}</td>
-                          <td className="p-3 text-xs">{createdAt}</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+              <TransactionsTable txs={txs} currentAccount={currentAccount} />
             </div>
           )}
         </div>
@@ -285,7 +244,7 @@ export default function Page() {
               Prev
             </button>
             <div className="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 shadow">Page {page}</div>
-            <div className="px-2 sm:px-4 py-1 sm:py-2 border border-slate-200 dark:border-slate-700 rounded-lg sm:rounded-xl bg-white dark:bg-slate-800 shadow text-xs sm:text-base">Page {page}</div>
+            {/* <div className="px-2 sm:px-4 py-1 sm:py-2 border border-slate-200 dark:border-slate-700 rounded-lg sm:rounded-xl bg-white dark:bg-slate-800 shadow text-xs sm:text-base">Page {page}</div> */}
             <button
               className="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 shadow hover:bg-sky-50 dark:hover:bg-sky-900 transition"
               onClick={() => setPage((v) => v + 1)}
