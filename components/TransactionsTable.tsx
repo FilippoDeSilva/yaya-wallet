@@ -35,56 +35,40 @@ export default function TransactionsTable({ txs, currentAccount }: TransactionsT
 					</tr>
 				</thead>
 				<tbody>
-					{txs.map((t) => {
-						const id = t.id;
-						const senderName = t.sender?.name || t.sender?.account || "—";
-						const receiverName = t.receiver?.name || t.receiver?.account || "—";
-						const amount = t.amount_with_currency || t.amount;
-						const currency = t.currency || "—";
-						const cause = t.cause || "—";
-						const createdAt = t.created_at_time
-							? new Date(t.created_at_time * 1000).toLocaleString()
-							: "—";
-						const incoming = t.is_topup || receiverName === currentAccount;
-						return (
-							<tr
-								key={id}
-								className={`border-b dark:border-slate-700 transition hover:bg-sky-50/50 dark:hover:bg-sky-900/20 ${incoming ? "bg-green-50/50 dark:bg-green-900/20" : ""}`}
-							>
-								<td className="p-3 break-all max-w-xs text-xs text-slate-400 font-mono">{id}</td>
-								<td className="p-3 font-semibold">{senderName}</td>
-								<td className="p-3 font-semibold">{receiverName}</td>
-								<td className={`p-3 text-right font-bold ${incoming ? "text-green-600" : "text-red-600"}`}>{amount}</td>
-								<td className="p-3">{currency}</td>
-								<td className="p-3">{cause}</td>
-								<td className="p-3 text-xs">{createdAt}</td>
-							</tr>
-						);
-					})}
+								{txs.map((t) => {
+									const id = t.id;
+									const senderName = t.sender?.name || t.sender?.account || "—";
+									const receiverName = t.receiver?.name || t.receiver?.account || "—";
+									const amount = t.amount_with_currency || t.amount;
+									const currency = t.currency || "—";
+									const cause = t.cause || "—";
+									const createdAt = t.created_at_time
+										? new Date(t.created_at_time * 1000).toLocaleString()
+										: "—";
+									const isTopup = t.sender?.account === t.receiver?.account;
+									const incoming = isTopup || receiverName === currentAccount;
+									const indicator = isTopup
+										? <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs font-semibold">Top-up</span>
+										: incoming
+											? <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs font-semibold">Incoming</span>
+											: <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 text-xs font-semibold">Outgoing</span>;
+									return (
+										<tr
+											key={id}
+											className={`border-b dark:border-slate-700 transition hover:bg-sky-50/50 dark:hover:bg-sky-900/20 ${incoming ? "bg-green-50/50 dark:bg-green-900/20" : ""}`}
+										>
+											<td className="p-3 break-all max-w-xs text-xs text-slate-400 font-mono">{id}</td>
+											<td className="p-3 font-semibold">{senderName}</td>
+											<td className="p-3 font-semibold">{receiverName}</td>
+											<td className={`p-3 text-right font-bold ${incoming ? "text-green-600" : "text-red-600"}`}>{amount}</td>
+											<td className="p-3">{currency}</td>
+											<td className="p-3">{cause}</td>
+											<td className="p-3 text-xs">{createdAt}</td>
+										</tr>
+									);
+								})}
 				</tbody>
 			</table>
 		</div>
 	);
 }
-//                   <td className="px-4 py-3">{t.id}</td>
-//                   <td className="px-4 py-3">{t.sender}</td>
-//                   <td className="px-4 py-3">{t.receiver}</td>
-//                   <td className="px-4 py-3 font-medium">{t.amount}</td>
-//                   <td className="px-4 py-3">{t.currency}</td>
-//                   <td className="px-4 py-3">{t.cause ?? "-"}</td>
-//                   <td className="px-4 py-3">{new Date(t.createdAt).toLocaleString()}</td>
-//                 </tr>
-//               );
-//             })
-//           ) : (
-//             <tr>
-//               <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
-//                 No transactions found.
-//               </td>
-//             </tr>
-//           )}
-//         </tbody>
-//       </table>
-//     </div>
-//   );
-// }

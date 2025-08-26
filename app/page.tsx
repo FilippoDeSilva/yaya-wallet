@@ -28,7 +28,7 @@ export default function Page() {
   const [txs, setTxs] = useState<Tx[]>([]);
   const [total, setTotal] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [currentAccount, setCurrentAccount] = useState<string>("yayawalletpi");
+  const [currentAccount, setCurrentAccount] = useState<string>("Surafel Araya");
   const { theme, toggleTheme } = useTheme();
 
   // ----------------- Effects -----------------
