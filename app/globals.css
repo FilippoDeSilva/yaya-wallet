@@ -5,6 +5,7 @@
 /* Smooth theme switching */
 html, body {
   @apply transition-colors duration-300 font-sans bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white min-h-screen;
+
 }
 
 ::-webkit-scrollbar {
