@@ -51,9 +51,6 @@ The app will be available at [http://localhost:3000](http://localhost:3000).
 
 ## Customization
 - You can change the default account, theme, or table columns in the code as needed.
-- The UI is built with React and Tailwind CSS for easy customization.
+- The UI is built with Next.Js (With TypeScript) and Tailwind CSS for easy customization.
 
 ---
-
-## Questions?
-If you have any issues or questions, feel free to open an issue or contact the maintainer.

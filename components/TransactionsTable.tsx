@@ -17,25 +17,44 @@ type Tx = {
 interface TransactionsTableProps {
 	txs: Tx[];
 	currentAccount: string;
+	loading?: boolean;
 }
 
-export default function TransactionsTable({ txs, currentAccount }: TransactionsTableProps) {
-	return (
-		<div className="hidden md:block overflow-auto">
-			<table className="min-w-full table-fixed text-sm">
-				<thead className="bg-slate-100 dark:bg-slate-700">
-					<tr>
-						<th className="p-3 text-left w-40">Txn ID</th>
-						<th className="p-3 text-left w-32">Sender</th>
-						<th className="p-3 text-left w-32">Receiver</th>
-						<th className="p-3 text-right w-24">Amount</th>
-						<th className="p-3 text-left w-20">Currency</th>
-						<th className="p-3 text-left w-32">Cause</th>
-						<th className="p-3 text-left w-40">Created At</th>
-					</tr>
-				</thead>
-				<tbody>
-								{txs.map((t) => {
+export default function TransactionsTable({ txs, currentAccount, loading = false }: TransactionsTableProps) {
+			const skeletonRows = Array.from({ length: 15 });
+		return (
+			<div className="hidden md:block overflow-auto">
+				<table className="min-w-full table-fixed text-sm">
+					<thead className="bg-slate-100 dark:bg-slate-700">
+						<tr>
+							<th className="p-3 text-left w-40">Txn ID</th>
+							<th className="p-3 text-left w-32">Sender</th>
+							<th className="p-3 text-left w-32">Receiver</th>
+							<th className="p-3 text-right w-24">Amount</th>
+							<th className="p-3 text-left w-20">Currency</th>
+							<th className="p-3 text-left w-32">Cause</th>
+							<th className="p-3 text-left w-40">Created At</th>
+						</tr>
+					</thead>
+					<tbody>
+						{loading
+  ? skeletonRows.map((_, i) => (
+      <tr key={i} className="border-b dark:border-slate-700 animate-pulse">
+        <td colSpan={7} className="p-3">
+          <div className="flex gap-4 items-center">
+            <div className="h-4 w-24 bg-slate-200 dark:bg-slate-700 rounded" />
+            <div className="h-4 w-20 bg-slate-200 dark:bg-slate-700 rounded" />
+            <div className="h-4 w-20 bg-slate-200 dark:bg-slate-700 rounded" />
+            <div className="h-4 w-16 bg-slate-200 dark:bg-slate-700 rounded ml-auto" />
+            <div className="h-4 w-12 bg-slate-200 dark:bg-slate-700 rounded" />
+            <div className="h-4 w-24 bg-slate-200 dark:bg-slate-700 rounded" />
+            <div className="h-4 w-32 bg-slate-200 dark:bg-slate-700 rounded" />
+          </div>
+        </td>
+      </tr>
+    ))
+
+							: txs.map((t) => {
 									const id = t.id;
 									const senderName = t.sender?.name || t.sender?.account || "—";
 									const receiverName = t.receiver?.name || t.receiver?.account || "—";
@@ -47,11 +66,6 @@ export default function TransactionsTable({ txs, currentAccount }: TransactionsT
 										: "—";
 									const isTopup = t.sender?.account === t.receiver?.account;
 									const incoming = isTopup || receiverName === currentAccount;
-									const indicator = isTopup
-										? <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs font-semibold">Top-up</span>
-										: incoming
-											? <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs font-semibold">Incoming</span>
-											: <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 text-xs font-semibold">Outgoing</span>;
 									return (
 										<tr
 											key={id}
@@ -67,8 +81,8 @@ export default function TransactionsTable({ txs, currentAccount }: TransactionsT
 										</tr>
 									);
 								})}
-				</tbody>
-			</table>
-		</div>
-	);
+					</tbody>
+				</table>
+			</div>
+		);
 }

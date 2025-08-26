@@ -178,15 +178,9 @@ export default function Page() {
         {/* Transactions List */}
   <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg overflow-hidden border border-slate-100 dark:border-slate-700">
           {loading ? (
-            <div className="p-8 text-center animate-pulse text-lg text-sky-600 dark:text-sky-400">
-              Loading transactions...
-            </div>
+            <TransactionsTable txs={[]} currentAccount={currentAccount} loading={true} />
           ) : error ? (
             <div className="p-8 text-center text-red-600 text-lg">Error: {error}</div>
-          ) : txs.length === 0 ? (
-            <div className="p-8 text-center text-slate-500 text-lg">
-              No transactions found.
-            </div>
           ) : (
             <div>
               {/* Mobile cards */}
@@ -225,7 +219,7 @@ export default function Page() {
               </ul>
 
               {/* Desktop table */}
-              <TransactionsTable txs={txs} currentAccount={currentAccount} />
+              <TransactionsTable txs={txs} currentAccount={currentAccount} loading={false} />
             </div>
           )}
         </div>
