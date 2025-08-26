@@ -176,50 +176,51 @@ export default function Page() {
         </div>
 
         {/* Transactions List */}
-  <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg overflow-hidden border border-slate-100 dark:border-slate-700">
-          {loading ? (
-            <TransactionsTable txs={[]} currentAccount={currentAccount} loading={true} />
-          ) : error ? (
-            <div className="p-8 text-center text-red-600 text-lg">Error: {error}</div>
-          ) : (
-            <div>
-              {/* Mobile cards */}
-              <ul className="md:hidden divide-y">
-                {txs.map((t) => {
-                  const id = t.id;
-                  const senderName = t.sender?.name || t.sender?.account || "—";
-                  const receiverName = t.receiver?.name || t.receiver?.account || "—";
-                  const amount = t.amount_with_currency || t.amount;
-                  const createdAt = t.created_at_time
-                    ? new Date(t.created_at_time * 1000).toLocaleString()
-                    : "—";
-                  const incoming = t.is_topup || receiverName === currentAccount;
-                  return (
-                    <li key={id} className={`p-4 flex flex-col gap-2 ${incoming ? "bg-green-50/50 dark:bg-green-900/20" : ""}`}>
-                      {/* Hide transaction ID on mobile */}
-                      {/* <div className="text-xs font-mono text-slate-400 break-all">{id}</div> */}
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <div className="text-base font-semibold text-slate-900 dark:text-white">
-                            {senderName} <span className="text-slate-400">→</span> {receiverName}
-                          </div>
-                          <div className="text-xs text-slate-500 mt-1">{createdAt}</div>
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg overflow-hidden border border-slate-100 dark:border-slate-700 relative">
+          {/* Always render TransactionsTable for desktop, with loading state */}
+          <div className="hidden md:block">
+            <TransactionsTable txs={txs} currentAccount={currentAccount} loading={loading} />
+          </div>
+          {/* Mobile cards: only show when not loading and not error */}
+          {!loading && !error && (
+            <ul className="md:hidden divide-y">
+              {txs.map((t) => {
+                const id = t.id;
+                const senderName = t.sender?.name || t.sender?.account || "—";
+                const receiverName = t.receiver?.name || t.receiver?.account || "—";
+                const amount = t.amount_with_currency || t.amount;
+                const createdAt = t.created_at_time
+                  ? new Date(t.created_at_time * 1000).toLocaleString()
+                  : "—";
+                const incoming = t.is_topup || receiverName === currentAccount;
+                return (
+                  <li key={id} className={`p-4 flex flex-col gap-2 ${incoming ? "bg-green-50/50 dark:bg-green-900/20" : ""}`}>
+                    {/* Hide transaction ID on mobile */}
+                    {/* <div className="text-xs font-mono text-slate-400 break-all">{id}</div> */}
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-base font-semibold text-slate-900 dark:text-white">
+                          {senderName} <span className="text-slate-400">→</span> {receiverName}
                         </div>
-                        <div className="text-right">
-                          <div className={`font-bold text-lg ${incoming ? "text-green-600" : "text-red-600"}`}>{amount}</div>
-                        </div>
+                        <div className="text-xs text-slate-500 mt-1">{createdAt}</div>
                       </div>
-                      <div className="flex gap-2 text-xs text-slate-500 mt-1">
-                        <span className="bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-full">{t.currency || "—"}</span>
-                        <span className="bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-full">{t.cause || "—"}</span>
+                      <div className="text-right">
+                        <div className={`font-bold text-lg ${incoming ? "text-green-600" : "text-red-600"}`}>{amount}</div>
                       </div>
-                    </li>
-                  );
-                })}
-              </ul>
-
-              {/* Desktop table */}
-              <TransactionsTable txs={txs} currentAccount={currentAccount} loading={false} />
+                    </div>
+                    <div className="flex gap-2 text-xs text-slate-500 mt-1">
+                      <span className="bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-full">{t.currency || "—"}</span>
+                      <span className="bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-full">{t.cause || "—"}</span>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+          {/* Error overlay */}
+          {error && (
+            <div className="absolute inset-0 flex items-center justify-center bg-white/80 dark:bg-slate-800/80 z-10">
+              <div className="p-8 text-center text-red-600 text-lg">Error: {error}</div>
             </div>
           )}
         </div>

@@ -10,9 +10,16 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const [theme, setTheme] = useState("dark");
 
   useEffect(() => {
-    if (localStorage.getItem("theme")) {
-      setTheme(localStorage.getItem("theme")!);
-      document.documentElement.classList.add(localStorage.getItem("theme")!);
+    // Always start in dark mode
+    document.documentElement.classList.remove("light", "dark");
+    document.documentElement.classList.add("dark");
+    setTheme("dark");
+    // If user has a preference, allow switching after initial render
+    const stored = localStorage.getItem("theme");
+    if (stored && stored !== "dark") {
+      setTheme(stored);
+      document.documentElement.classList.remove("light", "dark");
+      document.documentElement.classList.add(stored);
     }
   }, []);
 
