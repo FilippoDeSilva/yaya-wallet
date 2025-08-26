@@ -24,7 +24,7 @@ export default function Page() {
   const [q, setQ] = useState("");
   const [page, setPage] = useState(1);
   const [perPage] = useState(20);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [txs, setTxs] = useState<Tx[]>([]);
   const [total, setTotal] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -37,19 +37,12 @@ export default function Page() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
-  useEffect(() => {
-    // ...existing code...
-    // Remove theme effect, handled by ThemeProvider
-  }, []);
-
   // ----------------- Functions -----------------
   async function fetchData() {
     setLoading(true);
     setError(null);
     try {
-      const url = `/api/transactions?p=${page}&q=${encodeURIComponent(
-        q
-      )}&perPage=${perPage}`;
+      const url = `/api/transactions?p=${page}&q=${encodeURIComponent(q)}&perPage=${perPage}`;
       const res = await fetch(url);
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
@@ -59,7 +52,6 @@ export default function Page() {
         const json = await res.json();
         const transactions: Tx[] = json.data || [];
         const totalCount = json.total ?? transactions.length;
-
         setTxs(transactions);
         setTotal(totalCount);
       }
@@ -77,37 +69,34 @@ export default function Page() {
     fetchData();
   }
 
-  // Removed local toggleTheme, now using context
-
   // ----------------- Derived -----------------
-  const incomingCount = txs.filter(
-    (t) => t.is_topup || t.receiver?.account === currentAccount
-  ).length;
+  const incomingCount = txs.filter(t => t.is_topup || t.receiver?.account === currentAccount).length;
   const outgoingCount = txs.length - incomingCount;
-  const totalAmount = txs.reduce((s, t) => s + (t.amount || 0), 0);
 
   // ----------------- Render -----------------
+  const mobileSkeletons = Array.from({ length: 5 });
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-slate-100 dark:from-slate-900 dark:to-slate-800 transition-colors">
       <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-10">
         {/* Top Section */}
-  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
           <div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               YaYa Wallet <span className="text-sky-600 dark:text-sky-400">Transactions</span>
             </h1>
             <p className="mt-2 text-slate-600 dark:text-slate-400 max-w-xl text-sm sm:text-base">
               Securely view, search, and filter your account transactions.<br className="hidden sm:block" />
-              <span className="inline-block mt-1 text-xs sm:text-sm text-sky-600 dark:text-sky-400">Modern, responsive, and theme-aware UI.</span>
+              <span className="inline-block mt-1 text-xs sm:text-sm text-sky-600 dark:text-sky-400">
+                Modern, responsive, and theme-aware UI.
+              </span>
             </p>
           </div>
 
           {/* Account + Theme Switcher */}
           <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
             <div className="flex items-center gap-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 shadow-sm">
-              <label className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-semibold">
-                Account
-              </label>
+              <label className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-semibold">Account</label>
               <input
                 className="ml-2 w-32 sm:w-40 border-none px-1 py-0 bg-transparent focus:outline-none text-sm"
                 value={currentAccount}
@@ -126,7 +115,7 @@ export default function Page() {
         </div>
 
         {/* Stats + Search */}
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           {/* Search Bar */}
           <form onSubmit={onSearch} className="flex gap-2 col-span-2">
             <input
@@ -139,7 +128,7 @@ export default function Page() {
               type="submit"
               className="px-3 sm:px-5 py-2 sm:py-3 bg-sky-600 text-white rounded-lg sm:rounded-xl shadow hover:bg-sky-700 transition font-semibold text-xs sm:text-base flex items-center"
             >
-              <Search className="w-4 h-4 sm:w-5 sm:h-5"/>
+              <Search className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
             <button
               type="button"
@@ -150,7 +139,7 @@ export default function Page() {
                 fetchData();
               }}
             >
-              <Delete className="w-4 h-4 sm:w-5 sm:h-5"/>
+              <Delete className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </form>
 
@@ -162,61 +151,35 @@ export default function Page() {
             </div>
             <div className="bg-white dark:bg-slate-800 p-4 rounded-xl shadow flex flex-col items-center">
               <span className="text-xs text-slate-500">Incoming</span>
-              <span className="text-xl font-bold text-green-600">
-                {incomingCount}
-              </span>
+              <span className="text-xl font-bold text-green-600">{incomingCount}</span>
             </div>
             <div className="bg-white dark:bg-slate-800 p-4 rounded-xl shadow flex flex-col items-center">
               <span className="text-xs text-slate-500">Outgoing</span>
-              <span className="text-xl font-bold text-red-600">
-                {outgoingCount}
-              </span>
+              <span className="text-xl font-bold text-red-600">{outgoingCount}</span>
             </div>
           </div>
         </div>
 
         {/* Transactions List */}
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg overflow-hidden border border-slate-100 dark:border-slate-700 relative">
-          {/* Always render TransactionsTable for desktop, with loading state */}
-          <div className="hidden md:block">
-            <TransactionsTable txs={txs} currentAccount={currentAccount} loading={loading} />
-          </div>
-          {/* Mobile cards: only show when not loading and not error */}
-          {!loading && !error && (
+          <TransactionsTable txs={txs} currentAccount={currentAccount} loading={loading} />
+
+          {/* Mobile skeleton cards */}
+          {loading && (
             <ul className="md:hidden divide-y">
-              {txs.map((t) => {
-                const id = t.id;
-                const senderName = t.sender?.name || t.sender?.account || "—";
-                const receiverName = t.receiver?.name || t.receiver?.account || "—";
-                const amount = t.amount_with_currency || t.amount;
-                const createdAt = t.created_at_time
-                  ? new Date(t.created_at_time * 1000).toLocaleString()
-                  : "—";
-                const incoming = t.is_topup || receiverName === currentAccount;
-                return (
-                  <li key={id} className={`p-4 flex flex-col gap-2 ${incoming ? "bg-green-50/50 dark:bg-green-900/20" : ""}`}>
-                    {/* Hide transaction ID on mobile */}
-                    {/* <div className="text-xs font-mono text-slate-400 break-all">{id}</div> */}
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="text-base font-semibold text-slate-900 dark:text-white">
-                          {senderName} <span className="text-slate-400">→</span> {receiverName}
-                        </div>
-                        <div className="text-xs text-slate-500 mt-1">{createdAt}</div>
-                      </div>
-                      <div className="text-right">
-                        <div className={`font-bold text-lg ${incoming ? "text-green-600" : "text-red-600"}`}>{amount}</div>
-                      </div>
-                    </div>
-                    <div className="flex gap-2 text-xs text-slate-500 mt-1">
-                      <span className="bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-full">{t.currency || "—"}</span>
-                      <span className="bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-full">{t.cause || "—"}</span>
-                    </div>
-                  </li>
-                );
-              })}
+              {mobileSkeletons.map((_, i) => (
+                <li key={i} className="p-4 flex flex-col gap-2 animate-pulse">
+                  <div className="h-5 bg-slate-200 dark:bg-slate-700 rounded w-3/4"></div>
+                  <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/2"></div>
+                  <div className="flex gap-2">
+                    <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-12"></div>
+                    <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-16"></div>
+                  </div>
+                </li>
+              ))}
             </ul>
           )}
+
           {/* Error overlay */}
           {error && (
             <div className="absolute inset-0 flex items-center justify-center bg-white/80 dark:bg-slate-800/80 z-10">
@@ -239,7 +202,6 @@ export default function Page() {
               Prev
             </button>
             <div className="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 shadow">Page {page}</div>
-            {/* <div className="px-2 sm:px-4 py-1 sm:py-2 border border-slate-200 dark:border-slate-700 rounded-lg sm:rounded-xl bg-white dark:bg-slate-800 shadow text-xs sm:text-base">Page {page}</div> */}
             <button
               className="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 shadow hover:bg-sky-50 dark:hover:bg-sky-900 transition"
               onClick={() => setPage((v) => v + 1)}
