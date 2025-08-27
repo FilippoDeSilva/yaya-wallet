@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
     if (/^[a-zA-Z0-9-]{8,}$/.test(q)) {
       bodyObj.transaction_id = q;
     } else {
-      // otherwise fallback to general query (matches sender, receiver, cause)
+      // Fallback: simple query string (API matches sender, receiver, cause)
       bodyObj.query = q;
     }
   }
@@ -71,6 +71,15 @@ export async function GET(req: NextRequest) {
       data = { raw };
     }
 
+    // If searching by transaction_id, filter to exact match
+    if (q && /^[a-zA-Z0-9-]{8,}$/.test(q) && data?.data) {
+      const filtered = Array.isArray(data.data)
+        ? data.data.filter((tx: { id?: string; transaction_id?: string }) =>
+            tx.id === q || tx.transaction_id === q)
+        : [];
+      data.data = filtered;
+      data.total = filtered.length;
+    }
     return NextResponse.json(data, { status: resp.status });
   } catch (err: any) {
     return NextResponse.json(
