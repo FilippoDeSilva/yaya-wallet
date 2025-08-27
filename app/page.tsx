@@ -79,8 +79,8 @@ export default function Page() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-slate-100 dark:from-slate-900 dark:to-slate-800 transition-colors">
-      {/* Responsive Theme Toggler: fixed top right on mobile, in header on large screens */}
-      <div className="block lg:hidden fixed top-4 right-4 z-50">
+      {/* Responsive Theme Toggler: top right on mobile, in header on large screens */}
+  <div className="flex lg:hidden w-full pt-4 px-4 justify-end">
         <button
           onClick={toggleTheme}
           className="px-2 sm:px-4 py-1 sm:py-2 bg-slate-100 dark:bg-slate-700 text-xs sm:text-sm rounded-lg sm:rounded-xl border border-slate-200 dark:border-slate-700 hover:shadow-md transition flex items-center gap-1 sm:gap-2"
