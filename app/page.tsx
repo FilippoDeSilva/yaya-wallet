@@ -1,7 +1,7 @@
 "use client";
 
 import { Delete, Search } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useTheme } from "@/components/ThemeProvider";
 import TransactionsTable from "@/components/TransactionsTable";
 
@@ -31,11 +31,7 @@ export default function Page() {
   const [currentAccount, setCurrentAccount] = useState<string>("yayawalletpi");
   const { theme, toggleTheme } = useTheme();
 
-  useEffect(() => {
-    fetchData();
-  }, [page]);
-
-  async function fetchData() {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -61,7 +57,13 @@ export default function Page() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [q, page, perPage]);
+
+  useEffect(() => {
+    fetchData();
+  }, [q, page, fetchData]);
+
+  // fetchData is now defined above with useCallback
 
   function onSearch(e?: React.FormEvent) {
     if (e) e.preventDefault();
@@ -149,7 +151,6 @@ export default function Page() {
                 setQ("");
                 setPage(1);
                 setError(null);
-                setTimeout(() => fetchData(), 0);
               }}
             >
               <Delete className="w-4 h-4 sm:w-5 sm:h-5"/>

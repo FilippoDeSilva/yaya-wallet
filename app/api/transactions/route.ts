@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
 
   // Build body according to search type
   let bodyObj: any = { page: Number(p), per_page: Number(perPage) };
-  if (q) {
+  if (q && q.trim() !== "") {
     // If looks like transaction id (long alphanumeric), search by transaction_id
     if (/^[a-zA-Z0-9-]{8,}$/.test(q)) {
       bodyObj.transaction_id = q;
