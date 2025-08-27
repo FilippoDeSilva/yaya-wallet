@@ -148,7 +148,8 @@ export default function Page() {
               onClick={() => {
                 setQ("");
                 setPage(1);
-                fetchData();
+                setError(null);
+                setTimeout(() => fetchData(), 0);
               }}
             >
               <Delete className="w-4 h-4 sm:w-5 sm:h-5"/>
